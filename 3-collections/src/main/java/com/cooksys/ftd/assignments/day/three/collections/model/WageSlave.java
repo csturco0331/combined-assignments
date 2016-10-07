@@ -1,17 +1,19 @@
 package com.cooksys.ftd.assignments.day.three.collections.model;
 
 public class WageSlave implements Capitalist {
-
-    private String name;
-    private int salary;
-    private FatCat owner;
+	
+	private final String name;
+	private final int salary;
+	private final FatCat owner;
 
     public WageSlave(String name, int salary) {
-        this(name, salary, null);
+    	this.name = name;
+        this.salary = salary;
+        this.owner = null;
     }
 
     public WageSlave(String name, int salary, FatCat owner) {
-        this.name = name;
+    	this.name = name;
         this.salary = salary;
         this.owner = owner;
     }
@@ -24,7 +26,41 @@ public class WageSlave implements Capitalist {
         return name;
     }
 
-    /**
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+		result = prime * result + salary;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		WageSlave other = (WageSlave) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (owner == null) {
+			if (other.owner != null)
+				return false;
+		} else if (!owner.equals(other.owner))
+			return false;
+		if (salary != other.salary)
+			return false;
+		return true;
+	}
+
+	/**
      * @return the salary of the capitalist, in dollars
      */
     @Override
@@ -46,35 +82,5 @@ public class WageSlave implements Capitalist {
     @Override
     public FatCat getParent() {
         return owner;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        WageSlave wageSlave = (WageSlave) o;
-
-        if (salary != wageSlave.salary) return false;
-        if (name != null ? !name.equals(wageSlave.name) : wageSlave.name != null) return false;
-        return owner != null ? owner.equals(wageSlave.owner) : wageSlave.owner == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + salary;
-        result = 31 * result + (owner != null ? owner.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "WageSlave{" +
-                "name='" + name + '\'' +
-                ", salary=" + salary +
-                ", owner=" + owner +
-                '}';
     }
 }

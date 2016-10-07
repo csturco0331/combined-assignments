@@ -7,5 +7,5 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({FatCatProperties.class, MegaCorpProperties.class, WageSlaveProperties.class})
+@Suite.SuiteClasses({WageSlaveProperties.class, FatCatProperties.class, MegaCorpProperties.class})
 public class TestSuite { }

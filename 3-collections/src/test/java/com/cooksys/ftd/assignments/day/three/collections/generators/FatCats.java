@@ -1,12 +1,11 @@
 package com.cooksys.ftd.assignments.day.three.collections.generators;
 
-import com.cooksys.ftd.assignments.day.three.collections.model.Capitalist;
 import com.cooksys.ftd.assignments.day.three.collections.model.FatCat;
 import com.pholser.junit.quickcheck.generator.GenerationStatus;
 import com.pholser.junit.quickcheck.generator.Generator;
 import com.pholser.junit.quickcheck.random.SourceOfRandomness;
 
-public class FatCats extends Generator<FatCat> implements Capitalists {
+public class FatCats extends Generator<FatCat> implements CapitalistGeneration {
     private Cap cap;
     private Cat cat;
 

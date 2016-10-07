@@ -14,5 +14,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @GeneratorConfiguration
 @From(MegaCorps.class)
 public @interface Corp {
-    boolean empty() default true;
+    int depth() default 0;
+    int width() default 0;
+    int ratio() default 1;
 }

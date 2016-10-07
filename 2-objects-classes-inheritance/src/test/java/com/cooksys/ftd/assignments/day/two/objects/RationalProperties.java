@@ -59,7 +59,6 @@ public class RationalProperties {
     public void toString(@GenRat Rational r) {
         int n = r.getNumerator();
         int d = r.getDenominator();
-
         assertEquals((n < 0 != d < 0 ? "-" : "") + Math.abs(n) + "/" + Math.abs(d), r.toString());
     }
 

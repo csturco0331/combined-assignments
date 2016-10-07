@@ -16,7 +16,7 @@ public class SimplifiedRationalGenerator extends Generator<SimplifiedRational> {
     }
 
     public static int[] collapse(int t, int b) {
-        int e = t != 0 ? euclid(Math.abs(t), Math.abs(b)) : 1;
+        int e = t != 0 ? euclid(Math.abs(t), Math.abs(b)) : b;
         return new int[] { t / e, b / e};
     }
 
