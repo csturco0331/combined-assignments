@@ -3,6 +3,7 @@ package com.cooksys.serialization.assignment;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -33,7 +34,7 @@ public class Main {
 		if (!studentContactFile.getName().endsWith(".xml"))
 			throw new IOException("readStudent: File is not an xml");
 		if (jaxb == null)
-			jaxb = JAXBContext.newInstance(Contact.class);
+			jaxb = JAXBContext.newInstance(Contact.class, Session.class);
 		Unmarshaller jaxBUnmarshaller = jaxb.createUnmarshaller();
 		return new Student((Contact) jaxBUnmarshaller.unmarshal(studentContactFile));
 	}
@@ -54,7 +55,7 @@ public class Main {
 		if (!studentDirectory.isDirectory())
 			throw new IOException("readStudents: File is not a directory");
 		if (jaxb == null)
-			jaxb = JAXBContext.newInstance(Contact.class);
+			jaxb = JAXBContext.newInstance(Contact.class, Session.class);
 		Unmarshaller jaxBUnmarshaller = jaxb.createUnmarshaller();
 		List<Student> results = new ArrayList<>();
 		for (File file : studentDirectory.listFiles()) {
@@ -80,9 +81,9 @@ public class Main {
 	public static Instructor readInstructor(File instructorContactFile, JAXBContext jaxb)
 			throws JAXBException, IOException {
 		if (!instructorContactFile.getName().endsWith(".xml"))
-			throw new IOException("readStudent: File is not an XML");
+			throw new IOException("readInstructor: File is not an XML");
 		if (jaxb == null)
-			jaxb = JAXBContext.newInstance(Contact.class);
+			jaxb = JAXBContext.newInstance(Contact.class, Session.class);
 		Unmarshaller jaxBUnmarshaller = jaxb.createUnmarshaller();
 		return new Instructor((Contact) jaxBUnmarshaller.unmarshal(instructorContactFile));
 	}
@@ -101,19 +102,23 @@ public class Main {
 	 *            session location
 	 * @param jaxb
 	 *            the JAXB context to use
+	 * @param index
+	 * 			  the index pointing to the correct date within the directory
+	 *            (allows multiple dates to be found in the same location folder)
 	 * @return a {@link Session} object built from the data in the given
 	 *         directory
 	 */
-	public static Session readSession(File rootDirectory, JAXBContext jaxb) throws JAXBException, IOException {
+	public static Session readSession(File rootDirectory, JAXBContext jaxb, int index)
+			throws JAXBException, IOException {
 		if (!rootDirectory.isDirectory())
-			throw new IOException("readSession: File is not a directory");
+			return null;
 		if (jaxb == null)
-			jaxb = JAXBContext.newInstance(Contact.class);
+			jaxb = JAXBContext.newInstance(Contact.class, Session.class);
 		Session result = new Session();
 		result.setLocation(rootDirectory.getName());
-		result.setStartDate(rootDirectory.listFiles()[0].getName());
-		result.setInstructor(readInstructor(rootDirectory.listFiles()[0].listFiles()[0], jaxb));
-		result.setStudents(readStudents(rootDirectory.listFiles()[0].listFiles()[1], jaxb));
+		result.setStartDate(rootDirectory.listFiles()[index].getName());
+		result.setInstructor(readInstructor(rootDirectory.listFiles()[index].listFiles()[0], jaxb));
+		result.setStudents(readStudents(rootDirectory.listFiles()[index].listFiles()[1], jaxb));
 		return result; // TODO
 	}
 
@@ -129,13 +134,69 @@ public class Main {
 	 */
 	public static void writeSession(Session session, File sessionFile, JAXBContext jaxb)
 			throws JAXBException, IOException {
-		if (!sessionFile.getName().endsWith(".xml")) 
+		if (!sessionFile.getName().endsWith(".xml"))
 			throw new IOException("writeSession: File is not an XML");
-		if(jaxb == null)
-			jaxb = JAXBContext.newInstance(Session.class);
+		if (jaxb == null)
+			jaxb = JAXBContext.newInstance(Contact.class, Session.class);
 		Marshaller marshaller = jaxb.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 		marshaller.marshal(session, sessionFile);
+	}
+
+	/**
+	 * Takes a root directory and searches for all sessions nested in that directory
+	 * and returns them all as a list
+	 *
+	 * @param directory
+	 *            the root directory to search
+	 * @param jaxb
+	 *            the JAXB context to use
+	 * @return a {@link List<>} of type {@link Session} containing all sessions found
+	 *            nested in the directory
+	 */
+	public static List<Session> findSessions(File directory, JAXBContext jaxb) throws JAXBException, IOException {
+		if (!directory.isDirectory())
+			throw new IOException("readSession: File is not a directory");
+		if (jaxb == null)
+			jaxb = JAXBContext.newInstance(Contact.class, Session.class);
+		List<Session> results = new ArrayList<>();
+		File tempFile = directory;
+		//Pattern regex = Pattern.compile("[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9]");
+		if (tempFile.isDirectory()) {
+			int i = 0;
+			for (File file : tempFile.listFiles()) {
+				if(matchDate(file.getName())) {
+					results.add(readSession(tempFile, jaxb, i++));
+				}
+				if(file.isDirectory())
+					results.addAll(findSessions(file,jaxb));
+			}
+		}
+		results.removeAll(Collections.singleton(null));
+		return results;
+	}
+	
+	/**
+	 * Ensures that the passed string is strictly formatted to ##-##-####
+	 *
+	 * @param string
+	 *          the string to compare
+	 * @return a boolean value determining if the string is a match(true) or not(false)
+	 */
+	private static boolean matchDate(String string) {
+		if( 	string.length() == 10 &&
+				string.charAt(0) >= '0' && string.charAt(0) <= '9' &&
+				string.charAt(1) >= '0' && string.charAt(1) <= '9' &&
+				string.charAt(2) == '-' &&
+				string.charAt(3) >= '0' && string.charAt(3) <= '9' &&
+				string.charAt(4) >= '0' && string.charAt(4) <= '9' &&
+				string.charAt(2) == '-' &&
+				string.charAt(6) >= '0' && string.charAt(6) <= '9' &&
+				string.charAt(7) >= '0' && string.charAt(7) <= '9' &&
+				string.charAt(8) >= '0' && string.charAt(8) <= '9' &&
+				string.charAt(9) >= '0' && string.charAt(9) <= '9')
+			return true;
+		return false;
 	}
 
 	/**
@@ -160,9 +221,10 @@ public class Main {
 
 		try {
 			JAXBContext jaxb = JAXBContext.newInstance(Contact.class, Session.class);
-			File file = new File("input/memphis");
-			Session session = readSession(file, jaxb);
-			writeSession(session, new File("output/session.xml"), jaxb);
+			List<Session> sessions = findSessions(new File("input"), jaxb);
+			int i = 0;
+			for(Session session : sessions)
+				writeSession(session, new File("output/session" + i++ + ".xml"), jaxb);
 		} catch (JAXBException e) {
 			System.out.println(e);
 			e.printStackTrace();

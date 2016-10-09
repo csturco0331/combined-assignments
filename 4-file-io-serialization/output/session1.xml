@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<session location="memphis" start-date="08-08-2016">
+    <instructor>
+        <contact first-name="Michael" last-name="Boren">
+            <email>fake-michael-boren@cooksys.com</email>
+            <phone-number>(777) 777-7777</phone-number>
+        </contact>
+    </instructor>
+    <student>
+        <contact first-name="Adam" last-name="Fraser">
+            <email>fake-adam-fraser@gmail.com</email>
+        </contact>
+    </student>
+    <student>
+        <contact first-name="Ben" last-name="Ricks">
+            <email>fake-ben-ricks@gmail.com</email>
+        </contact>
+    </student>
+    <student>
+        <contact first-name="David" last-name="Karl">
+            <email>fake-david-karl@gmail.com</email>
+        </contact>
+    </student>
+    <student>
+        <contact first-name="Emmanuel" last-name="Mbaba">
+            <email>fake-emmanuel-mbaba@gmail.com</email>
+        </contact>
+    </student>
+    <student>
+        <contact first-name="Giovanny" last-name="Roman">
+            <email>fake-giovanny-roman@gmail.com</email>
+        </contact>
+    </student>
+</session>
