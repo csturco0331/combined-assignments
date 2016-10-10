@@ -13,4 +13,13 @@
     <artifactId>4-file-io-serialization</artifactId>
     <version>${ftd.assignments.version}</version>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.google.jimfs</groupId>
+            <artifactId>jimfs</artifactId>
+            <version>1.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
 </project>
