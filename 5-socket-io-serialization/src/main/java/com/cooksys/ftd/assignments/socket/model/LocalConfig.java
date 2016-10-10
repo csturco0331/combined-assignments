@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 public class LocalConfig {
     @XmlAttribute
     private int port;
-
+    
     public int getPort() {
         return port;
     }
