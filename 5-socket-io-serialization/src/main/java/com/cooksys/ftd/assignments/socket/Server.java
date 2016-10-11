@@ -13,7 +13,7 @@ import javax.xml.bind.Unmarshaller;
 import com.cooksys.ftd.assignments.socket.model.Config;
 import com.cooksys.ftd.assignments.socket.model.Student;
 
-public class Server extends Utils {
+public class Server implements Runnable {
 
 	/**
 	 * Reads a {@link Student} object from the given file path
@@ -48,7 +48,7 @@ public class Server extends Utils {
 	 * Following this transaction, the server may shut down or listen for more
 	 * connections.
 	 */
-	public static void main(String[] args) {
+	public void run() {
 
 		try {
 
