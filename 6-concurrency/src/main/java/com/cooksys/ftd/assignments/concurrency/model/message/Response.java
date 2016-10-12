@@ -14,6 +14,16 @@ public class Response {
 
     @XmlAttribute
     private boolean successful;
+    
+    public Response() {
+    	
+    }
+    
+    public Response(String data, RequestType type, boolean successful) {
+    	this.data = data;
+    	this.type = type;
+    	this.successful = successful;
+    }
 
     public String getData() {
         return data;

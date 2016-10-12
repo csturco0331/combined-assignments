@@ -75,8 +75,7 @@ public class Server implements Runnable {
 			// unmarshall student, then marshall it again, sending it to the
 			// sockets outputstream
 			Student student = (Student) unmarshaller.unmarshal(new File(config.getStudentFilePath()));
-			marshaller.marshal(student,
-					s.getOutputStream());
+			marshaller.marshal(student, s.getOutputStream());
 
 			// close the serversocket
 				s.close();
