@@ -11,17 +11,15 @@ public class Client implements Runnable {
 
 	private final int port;
 	private final String host;
-	private boolean disabled;
-	private int maxInstances;
-	private SpawnStrategy spawnStrategy;
-	private List<ClientInstanceConfig> instances;
+	private final int maxInstances;
+	private final SpawnStrategy spawnStrategy;
+	private final List<ClientInstanceConfig> instances;
 	
 	public static AtomicInteger numInstances = new AtomicInteger(0);
 	
     public Client(ClientConfig config) {
         port = config.getPort();
         host = config.getHost();
-        disabled = config.isDisabled();
         maxInstances = config.getMaxInstances();
         spawnStrategy = config.getSpawnStrategy();
         instances = config.getInstances();
@@ -29,33 +27,27 @@ public class Client implements Runnable {
 
     @Override
     public void run() {
-    	if(!disabled) {
-    		while(!instances.isEmpty()) {
-    			if(maxInstances < 0 || numInstances.get() < maxInstances) {
-    				switch(spawnStrategy) {
-    				case NONE :
-    					return;
-    				case PARALLEL :
-    					numInstances.incrementAndGet();
-        				try {
-							new Thread(new ClientInstance(instances.remove(0), port, host)).start();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-    					break;
-    				case SEQUENTIAL :
-    					numInstances.incrementAndGet();
-    					try {
-							new ClientInstance(instances.remove(0), port, host).run();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-    					break;
-    				default :
-    					return;
-    				}
-    			}
-    		}
-    	}
-    }
+		try {
+			while(!instances.isEmpty()) {
+				if(maxInstances < 0 || numInstances.get() < maxInstances) {
+					switch(spawnStrategy) {
+					case NONE :
+						return;
+					case PARALLEL :
+						numInstances.incrementAndGet();
+						new Thread(new ClientInstance(instances.remove(0), port, host)).start();
+						break;
+					case SEQUENTIAL :
+						numInstances.incrementAndGet();
+						new ClientInstance(instances.remove(0), port, host).run();
+						break;
+					default :
+						return;
+					}
+				}
+			}
+		} catch (Exception e) {
+	    	e.printStackTrace();
+	    }
+    } 
 }

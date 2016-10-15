@@ -61,6 +61,7 @@ public class ClientInstance implements Runnable {
 			e.printStackTrace();
 		} finally {
 			System.out.println("ClientInstance is disconnecting");
+			Client.numInstances.decrementAndGet();
 			try {
 				close();
 			} catch (IOException e) {

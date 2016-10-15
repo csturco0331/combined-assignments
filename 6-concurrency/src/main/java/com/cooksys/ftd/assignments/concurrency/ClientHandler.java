@@ -36,8 +36,8 @@ public class ClientHandler implements Runnable {
 		output.close();
     }
 	
-	private void sendResponce(String string, Response response) throws JAXBException, IOException {
-		System.out.println(string);
+	private void sendResponce(Response response) throws JAXBException, IOException {
+		System.out.printf("%s: Sending %s response\n",id,response.getData());
 		output.write(gson.toJson(response));
 		output.newLine();
 		output.flush();
@@ -49,13 +49,13 @@ public class ClientHandler implements Runnable {
 			while(!client.isClosed()) {	
 				switch(gson.fromJson(input.readLine(), Request.class).getType()) {
 				case DONE :
-					sendResponce(id + " Sending DONE response", new Response("Goodbye", RequestType.DONE, true));
+					sendResponce(new Response("Goodbye", RequestType.DONE, true));
 					return;
 				case TIME :
-					sendResponce(id + " Sending TIME response", new Response(LocalTime.now().toString(), RequestType.TIME, true));
+					sendResponce(new Response(LocalTime.now().toString(), RequestType.TIME, true));
 					break;
 				case IDENTITY :
-					sendResponce(id + " Sending IDENTITY response", new Response(client.getLocalAddress().toString(), RequestType.IDENTITY, true));
+					sendResponce(new Response(client.getLocalAddress().toString(), RequestType.IDENTITY, true));
 					break;
 				default :
 					return;
@@ -74,7 +74,6 @@ public class ClientHandler implements Runnable {
 			try {
 				close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
