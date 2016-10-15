@@ -1,6 +1,5 @@
 package com.cooksys.ftd.assignments.concurrency.model.config;
 
-import java.io.File;
 import java.nio.file.Path;
 
 import javax.xml.bind.JAXBContext;
@@ -21,7 +20,7 @@ public class Config {
      * @throws JAXBException 
      */
     public static Config load(Path path) throws JAXBException {
-        return (Config) JAXBContext.newInstance(Config.class).createUnmarshaller().unmarshal(new File("config/config.xml"));
+        return (Config) JAXBContext.newInstance(Config.class).createUnmarshaller().unmarshal(path.toFile());
     }
 
     /**

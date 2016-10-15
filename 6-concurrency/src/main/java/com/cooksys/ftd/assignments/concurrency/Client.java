@@ -1,6 +1,5 @@
 package com.cooksys.ftd.assignments.concurrency;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,7 +31,7 @@ public class Client implements Runnable {
     public void run() {
     	if(!disabled) {
     		while(!instances.isEmpty()) {
-    			if(maxInstances < 0 || numInstances.get() <= maxInstances) {
+    			if(maxInstances < 0 || numInstances.get() < maxInstances) {
     				switch(spawnStrategy) {
     				case NONE :
     					return;
@@ -40,8 +39,7 @@ public class Client implements Runnable {
     					numInstances.incrementAndGet();
         				try {
 							new Thread(new ClientInstance(instances.remove(0), port, host)).start();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
     					break;
@@ -49,8 +47,7 @@ public class Client implements Runnable {
     					numInstances.incrementAndGet();
     					try {
 							new ClientInstance(instances.remove(0), port, host).run();
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
     					break;

@@ -7,7 +7,7 @@
         <port>8080</port>
         <host>localhost</host>
         <max-instances>-1</max-instances>
-        <spawn-strategy>PARALLEL</spawn-strategy>
+        <spawn-strategy>SEQUENTIAL</spawn-strategy>
         <instances>
             <instance delay="500">
                 <request>IDENTITY</request>

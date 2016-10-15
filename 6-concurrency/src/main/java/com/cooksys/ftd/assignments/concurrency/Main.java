@@ -25,15 +25,9 @@ public class Main {
     public static void main(String[] args) throws JAXBException, IOException, InterruptedException {
     	
     	Config config = Config.load(new File("config/config.xml").toPath());
-    	Thread server = new Thread(new Server(config.getServer()));
-    	Thread client = new Thread(new Client(config.getClient()));
     	if(!config.getServer().isDisabled())
-    		server.start();
+    		new Thread(new Server(config.getServer())).start();
     	if(!config.getClient().isDisabled())
-    		client.start();
-    	client.join();
-    	System.out.println("Client has closed");
-    	server.join();
-    	System.out.println("server stopped");
+    		new Thread(new Client(config.getClient())).start();
     }
 }

@@ -5,77 +5,57 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.Socket;
 import java.time.LocalTime;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.JAXBException;
 
 import com.cooksys.ftd.assignments.concurrency.model.message.Request;
 import com.cooksys.ftd.assignments.concurrency.model.message.RequestType;
 import com.cooksys.ftd.assignments.concurrency.model.message.Response;
+import com.google.gson.Gson;
 
 public class ClientHandler implements Runnable {
 	
 	private final Socket client;
 	private final String id;
 	private final BufferedReader input;
-	private StringReader inputReader;
 	private final BufferedWriter output;
-	private StringWriter outputWriter;
+	private final Gson gson = new Gson();
 
-	public ClientHandler(Socket client) throws IOException {
+	public ClientHandler(Socket client) throws IOException, JAXBException {
 		this.client = client;
 		id = "Server " + client.getLocalSocketAddress();
 		input = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		output = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-		outputWriter = new StringWriter();
+	}
+	
+    private void close() throws IOException {
+    	client.close();
+		input.close();
+		output.close();
+    }
+	
+	private void sendResponce(String string, Response response) throws JAXBException, IOException {
+		System.out.println(string);
+		output.write(gson.toJson(response));
+		output.newLine();
+		output.flush();
 	}
 
 	@Override
 	public void run() {
-		try {
-			
-			JAXBContext jaxb = JAXBContext.newInstance(Request.class, Response.class);
-			Unmarshaller unmarshaller = jaxb.createUnmarshaller();
-			Marshaller marshaller = jaxb.createMarshaller();
-			//marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			
+		try {			
 			while(!client.isClosed()) {	
-				System.out.println(id + " Waiting for request");
-				//System.out.println(client.getLocalSocketAddress()+" : "+client.getRemoteSocketAddress());
-				inputReader = new StringReader(input.readLine());
-				Request request = (Request) unmarshaller.unmarshal(inputReader);
-				RequestType message = request.getType();
-				System.out.println(id + " Recieved " + message + " request");
-				switch(message) {
+				switch(gson.fromJson(input.readLine(), Request.class).getType()) {
 				case DONE :
-					System.out.println(id + " Sending DONE response");
-					marshaller.marshal(new Response("Goodbye", RequestType.DONE, true), outputWriter);
-					output.write(outputWriter.toString());
-					outputWriter.getBuffer().setLength(0);
-					output.newLine();
-					output.flush();
+					sendResponce(id + " Sending DONE response", new Response("Goodbye", RequestType.DONE, true));
 					return;
 				case TIME :
-					System.out.println(id + " Sending TIME response");
-					marshaller.marshal(new Response(LocalTime.now().toString(), RequestType.TIME, true), outputWriter);
-					output.write(outputWriter.toString());
-					outputWriter.getBuffer().setLength(0);
-					output.newLine();
-					output.flush();
+					sendResponce(id + " Sending TIME response", new Response(LocalTime.now().toString(), RequestType.TIME, true));
 					break;
 				case IDENTITY :
-					System.out.println(id + " Sending IDENTITY response");
-					Response response = new Response(client.getLocalAddress().toString(), RequestType.IDENTITY, true);
-					marshaller.marshal(response, outputWriter);
-					output.write(outputWriter.toString());
-					outputWriter.getBuffer().setLength(0);
-					output.newLine();
-					output.flush();
+					sendResponce(id + " Sending IDENTITY response", new Response(client.getLocalAddress().toString(), RequestType.IDENTITY, true));
 					break;
 				default :
 					return;
@@ -92,7 +72,7 @@ public class ClientHandler implements Runnable {
 			System.out.println(id + " has disconnected");
 			Server.numClients.decrementAndGet();
 			try {
-				client.close();
+				close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
