@@ -46,7 +46,7 @@ public class ClientHandler implements Runnable {
 	@Override
 	public void run() {
 		try {			
-			while(!client.isClosed()) {	
+			while(true) {	
 				switch(gson.fromJson(input.readLine(), Request.class).getType()) {
 				case DONE :
 					sendResponce(new Response("Goodbye", RequestType.DONE, true));
@@ -62,9 +62,9 @@ public class ClientHandler implements Runnable {
 				}
 			}
 		}
-		catch (NullPointerException e) {
-			
-		}
+//		catch (NullPointerException e) {
+//			
+//		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -28,18 +28,18 @@ public class Client implements Runnable {
     @Override
     public void run() {
 		try {
-			while(!instances.isEmpty()) {
+			for(ClientInstanceConfig instance : instances) {
 				if(maxInstances < 0 || numInstances.get() < maxInstances) {
 					switch(spawnStrategy) {
 					case NONE :
 						return;
 					case PARALLEL :
 						numInstances.incrementAndGet();
-						new Thread(new ClientInstance(instances.remove(0), port, host)).start();
+						new Thread(new ClientInstance(instance, port, host)).start();
 						break;
 					case SEQUENTIAL :
 						numInstances.incrementAndGet();
-						new ClientInstance(instances.remove(0), port, host).run();
+						new ClientInstance(instance, port, host).run();
 						break;
 					default :
 						return;
